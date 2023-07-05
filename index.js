@@ -1,13 +1,16 @@
 import express from 'express'
-import tasks from 'routes/tasks.js'
+import { getTasks } from './routes/tasks.js'
 
+const port = 3300
 const app = express()
+app.set('view engine', 'pug')
 
 app.route('/')
-    .get(
+    .get(getTasks)
 
-app.listen(3000, () => {
-    console.log('Server started at port: 3000')
+app.listen(port, () => {
+    console.log(`Server started at port: ${port}`)
 })
+
 
 export { app }

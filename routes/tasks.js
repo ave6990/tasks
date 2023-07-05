@@ -1,8 +1,10 @@
-import fs from 'fs'
+import pug from 'pug'
 
-const async getTasks = (req, res) => {
-    let content = await fs.readFile('views/index.html', { encoding: 'utf8' })
-    res.send(content)
+const getTasks = async (req, res) => {
+    let content = pug.renderFile('./views/index.pug')
+    res.render('index', { title: 'taskManager',
+        header: 'Текущие задачи',
+        content: 'Some info...'})
 }
 
 export { getTasks }

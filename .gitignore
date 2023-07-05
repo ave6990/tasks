@@ -131,3 +131,5 @@ dist
 
 # Data files
 /data
+*.swp
+*.swo
