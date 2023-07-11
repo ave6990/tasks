@@ -90,7 +90,6 @@ class MYdb {
                 } else if (value === null) {
                     data[i][key] = 'null'
                 }
-                console.log(key, value)
             }
         }
 
@@ -123,20 +122,12 @@ class TasksDb extends MYdb {
         this.setQueries(tasksQueries)
     }
 
-    active() {
-        this.view(this.q.active_tasks)
+    async active() {
+        return await this.sql(this.q.active_tasks)
     }
 
-    task(id) {
-        this.view(this.q.tasks_by_id.replace('#{}', id))
-    }
-
-    info() {
-        this.view([
-            'select * from categories',
-            'select * from statuses',
-            'select * from priority',
-        ])
+    async task(id) {
+        return await this.sql(this.q.tasks_by_id.replace('#{}', id))
     }
 }
 

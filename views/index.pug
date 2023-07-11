@@ -10,14 +10,10 @@ html
             include ../views/styles/main.css
     body
         header
-            h1=header
-            p#date Дата: !{date}
-        main
-            | !{content}
+            h1 !{header} 
+        main !{content}
         footer
             p
                 copyright='Copyright © Александр Ермолаев 2023'
             p
                 ='e-mail: ave6990@ya.ru'
-script(defer)
-    include ../public/main.js

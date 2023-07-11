@@ -1,0 +1,38 @@
+section.input_form
+    label='Описание '
+        input#description(placeholder='Ввести...')
+    div.inline_input
+        label='Приоритет '
+            input#priority(list='priority_list' placeholder='Выбрать...')
+            datalist#priority_list
+        label='Статус '
+            input#status(list='status_list' placeholder='Выбрать...')
+            datalist#status_list
+        label='Прогресс '
+            input#progress(list='progress_list' placeholder='Выбрать...')
+            datalist#progress_list
+        label='Основная задача'
+            input#master_task(list='master_task_list' placeholder='Выбрать...')
+            datalist#master_task_list
+        label='Категория '
+            input#category(list='category_list' placeholder='Выбрать...')
+            datalist#category_list
+    div.inline_date
+        label='Дата начала '
+            input#date_from(type='date')
+        label='Срок выполнения '
+            input#date_to(type='date')
+    label='Комментарий '
+        input#comment(placeholder='Ввести...')
+    div.inline_date
+        input#add_task(type='button' value='Добавить')
+        input#save_task(type='button' value='Сохранить')
+        input#clear_form(type='button' value='Очистить')
+        input#delete_task(type='button' value='Удалить')
+        
+section.centered
+    h2='Список задач'
+    | !{content}
+
+script(defer type='module')
+        include ../public/tasks.js
