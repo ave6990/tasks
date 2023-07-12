@@ -43,7 +43,7 @@ footer {
     justify-content: center;
 }
 
-.input_form {
+#input_form {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -53,7 +53,7 @@ label {
     margin: 5px 0;
 }
 
-.input_form > label {
+#input_form label {
     min-width: 150px;
 }
 
