@@ -18,8 +18,8 @@ class Form {
     }
 }
 
-const tab = document.getElementById('tasks_table')
 const form = new Form()
+const tab = document.getElementById('tasks_table')
 
 tab.addEventListener('click', (ev) => {
     const row_num = ev.target.parentNode.id.split('_')[1]

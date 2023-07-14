@@ -47,6 +47,7 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    max-width: 600px;
 }
 
 label {
@@ -59,6 +60,11 @@ label {
 
 .inline_input > label {
     min-width: 150px;
+}
+
+.inline_input > input {
+    min-width: 150px;
+    margin: 5px 0;
 }
 
 table {
@@ -85,16 +91,6 @@ td, th {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
-}
-
-.inline_date {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
-
-.inline_date > label, .inline_date > input {
-    margin: 10px 20px 10px 0;
 }
 
 label > input {
