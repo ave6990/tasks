@@ -1,0 +1,500 @@
+                            (td {:rowspan 4}
+                                (:master_task m))
+                            (td {:rowspan 4}
+                                (:priority m))
+                            (td {:colspan 3}
+                                (progress
+                                  {:value (:status m)})))
+                          (tr
+                            (td (:date_from m))
+                            (td (:date_to m))
+                            (td (:complete_date m)))
+                          (tr 
+                            (td {:colspan 3}
+                                (:description m)))
+                          (tr
+                            (td {:colspan 3}
+                                (:comment m))))))
+                   coll))))))))
+(ns tasks.lib.gen-html
+  (:require [clojure.string :as string]))
+(html-tag html)
+(html-tag head)
+(html-tag title)
+(html-tag style)
+(html-tag script)
+(html-tag body)
+(html-tag h1)
+(html-tag h2)
+(html-tag h3)
+(html-tag section)
+(html-tag div)
+(html-tag header)
+(html-tag main)
+(html-tag footer)
+(html-tag details)
+(html-tag summary)
+(html-tag table)
+(html-tag thead)
+(html-tag tbody)
+(html-tag tr)
+(html-tag th)
+(html-tag td)
+(html-tag p)
+(html-tag time)
+(html-tag strong)
+(html-tag ul)
+(html-tag ol)
+(html-tag li)
+(html-tag em)
+(html-tag span)
+(html-tag a)
+(html-tag article)
+(html-tag-unpaired meta)
+(html-tag-unpaired br)
+(html-tag-unpaired img)
+(html-tag-unpaired input)
+(html-tag-unpaired hr)
+(ns tasks.view.report
+  (:require [tasks.lib.gen-html :refer :all]
+            [clojure.string :as string]))
+(defn tasks-report
+  ""
+  [coll]
+  (report "tasks" styles
+    (body
+      (header)
+      (main
+        (table
+          (thead
+            (tr
+              (th {:rowspan 4}
+                  "id")
+              (th {:rowspan 4}
+                  "master_task")
+              (th {:rowspan 4}
+                  "priority")
+              (th {:colspan 3}
+                  "status"))
+            (tr
+              (th "date_from")
+              (th "date_to")
+              (th "coplete_date"))
+            (tr
+              (th {:colspan 3}
+                  "description"))
+            (tr
+              (th {:colspan 3}
+                  "comment")))
+          (tbody
+            (string/join
+              "\n"
+              (map (fn [m]
+                       (string/join
+                        "\n"
+                        (list
+                          (tr
+                            (td {:rowspan 4}
+                                (:id m))
+                            (td {:rowspan 4}
+                                (:master_task m))
+                            (td {:rowspan 4}
+                                (:priority m))
+                            (td {:colspan 3}
+                                (progress
+                                  {:value (:status m)})))
+                          (tr
+                            (td (:date_from m))
+                            (td (:date_to m))
+                            (td (:complete_date m)))
+                          (tr 
+                            (td {:colspan 3}
+                                (:description m)))
+                          (tr
+                            (td {:colspan 3}
+                                (:comment m))))))
+                   coll))))))))
+(ns tasks.lib.gen-html
+  (:require [clojure.string :as string]))
+(html-tag html)
+(html-tag head)
+(html-tag title)
+(html-tag style)
+(html-tag script)
+(html-tag body)
+(html-tag h1)
+(html-tag h2)
+(html-tag h3)
+(html-tag section)
+(html-tag div)
+(html-tag header)
+(html-tag main)
+(html-tag footer)
+(html-tag details)
+(html-tag summary)
+(html-tag progress)
+(html-tag table)
+(html-tag thead)
+(html-tag tbody)
+(html-tag tr)
+(html-tag th)
+(html-tag td)
+(html-tag p)
+(html-tag time)
+(html-tag strong)
+(html-tag ul)
+(html-tag ol)
+(html-tag li)
+(html-tag em)
+(html-tag span)
+(html-tag a)
+(html-tag article)
+(html-tag-unpaired meta)
+(html-tag-unpaired br)
+(html-tag-unpaired img)
+(html-tag-unpaired input)
+(html-tag-unpaired hr)
+(ns tasks.view.report
+  (:require [tasks.lib.gen-html :refer :all]
+            [clojure.string :as string]))
+(defn tasks-report
+  ""
+  [coll]
+  (report "tasks" styles
+    (body
+      (header)
+      (main
+        (table
+          (thead
+            (tr
+              (th {:rowspan 4}
+                  "id")
+              (th {:rowspan 4}
+                  "master_task")
+              (th {:rowspan 4}
+                  "priority")
+              (th {:colspan 3}
+                  "status"))
+            (tr
+              (th "date_from")
+              (th "date_to")
+              (th "coplete_date"))
+            (tr
+              (th {:colspan 3}
+                  "description"))
+            (tr
+              (th {:colspan 3}
+                  "comment")))
+          (tbody
+            (string/join
+              "\n"
+              (map (fn [m]
+                       (string/join
+                        "\n"
+                        (list
+                          (tr
+                            (td {:rowspan 4}
+                                (:id m))
+                            (td {:rowspan 4}
+                                (:master_task m))
+                            (td {:rowspan 4}
+                                (:priority m))
+                            (td {:colspan 3}
+                                (progress
+                                  {:value (:status m)})))
+                          (tr
+                            (td (:date_from m))
+                            (td (:date_to m))
+                            (td (:complete_date m)))
+                          (tr 
+                            (td {:colspan 3}
+                                (:description m)))
+                          (tr
+                            (td {:colspan 3}
+                                (:comment m))))))
+                   coll))))))))
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(ns tasks.lib.tasks-db
+  (:require 
+    [clojure.java.jdbc :as jdbc]
+    [clojure.string :as string]
+    [clojure.pprint :refer [pprint]]
+    [clojure.java.shell :refer [sh]]
+    [tasks.view.report :as report]))
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(nil? "")
+(nil? nil)
+(defn tasks-report
+  ""
+  [coll]
+  (report "tasks" styles
+    (body
+      (header)
+      (main
+        (table
+          (thead
+            (tr
+              (th {:rowspan 4}
+                  "id")
+              (th {:rowspan 4}
+                  "master_task")
+              (th {:rowspan 4}
+                  "priority")
+              (th {:colspan 3}
+                  "status"))
+            (tr
+              (th "date_from")
+              (th "date_to")
+              (th "coplete_date"))
+            (tr
+              (th {:colspan 3}
+                  "description"))
+            (tr
+              (th {:colspan 3}
+                  "comment")))
+          (tbody
+            (string/join
+              "\n"
+              (map (fn [m]
+                       (string/join
+                        "\n"
+                        (list
+                          (tr
+                            (td {:rowspan 4}
+                                (:id m))
+                            (td {:rowspan 4}
+                                (:master_task m))
+                            (td {:rowspan 4}
+                                (:priority m))
+                            (td {:colspan 3}
+                                (progress
+                                  {:value (:status m)})))
+                          (tr
+                            (td (:date_from m))
+                            (td (:date_to m))
+                            (td (:complete_date m)))
+                          (tr 
+                            (td {:colspan 3}
+                                (:description m)))
+                          (tr
+                            (td {:colspan 3}
+                                (if (nil? (:comment m))
+                                    ""
+                                    (:comment m)))))))
+                   coll))))))))
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(defn tasks-report
+  ""
+  [coll]
+  (report "tasks" styles
+    (body
+      (header)
+      (main
+        (table
+          (thead
+            (tr
+              (th {:rowspan 4}
+                  "id")
+              (th {:rowspan 4}
+                  "master_task")
+              (th {:rowspan 4}
+                  "priority")
+              (th {:colspan 3}
+                  "status"))
+            (tr
+              (th "date_from")
+              (th "date_to")
+              (th "coplete_date"))
+            (tr
+              (th {:colspan 3}
+                  "description"))
+            (tr
+              (th {:colspan 3}
+                  "comment")))
+          (tbody
+            (string/join
+              "\n"
+              (map (fn [m]
+                       (string/join
+                        "\n"
+                        (list
+                          (tr
+                            (td {:rowspan 4}
+                                (:id m))
+                            (td {:rowspan 4}
+                                (:master_task m))
+                            (td {:rowspan 4}
+                                (:priority m))
+                            (td {:colspan 3}
+                                (progress
+                                  {:value (:status m)})))
+                          (tr
+                            (td (:date_from m))
+                            (td (:date_to m))
+                            (td (:complete_date m)))
+                          (tr 
+                            (td {:colspan 3}
+                                (:description m)))
+                          (tr
+                            (td {:colspan 3}
+                                (if (nil? (:comment m))
+                                    "null"
+                                    (:comment m)))))))
+                   coll))))))))
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "id >= 50")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+;; #tasks
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+;; #tasks
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "status < 100")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    :status 100
+    :complete_date "2023-06-21"
+    ;:priority 1
+    ;:date_to ""
+    ;:description
+    ;:comment
+    ;:master_task nil
+    ;:date_from ""
+  }
+  ["id = ?" 17])
+;; #tasks
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "status < 100")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    :status 100
+    ;:complete_date "2023-06-21"
+    ;:priority 1
+    ;:date_to ""
+    ;:description
+    ;:comment
+    ;:master_task nil
+    ;:date_from ""
+  }
+  ["status < ?" 100])
+;; #tasks
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "status < 100")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 1
+    :description "Выгрузить Уральская сталь 9/030006"
+    :date_to "2023-12-05"
+    :comment nil
+    :date_from "2023-12-05"
+    :status 0
+  })
+;; #tasks
+(spit
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+  (report/tasks-report
+    (get-data "status < 100")))
+(sh
+  "vivaldi"
+  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
