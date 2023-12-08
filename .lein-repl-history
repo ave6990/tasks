@@ -1,10 +1,9 @@
-                            (td {:rowspan 4}
-                                (:master_task m))
-                            (td {:rowspan 4}
+                            (td {:rowspan 5}
                                 (:priority m))
-                            (td {:colspan 3}
+                            (td {:colspan 5}
                                 (progress
-                                  {:value (:status m)})))
+                                  {:max 100
+                                   :value (:status m)})))
                           (tr
                             (td (:date_from m))
                             (td (:date_to m))
@@ -14,8 +13,26 @@
                                 (:description m)))
                           (tr
                             (td {:colspan 3}
-                                (:comment m))))))
+                                (if (nil? (:comment m))
+                                    "-"
+                                    (:comment m))))
+                          (tr
+                            (td {:colspan 3}
+                                (if (nil? (:tags m))
+                                    "-"
+                                    (:tags m)))))))
                    coll))))))))
+(ns tasks.lib.tasks-db
+  (:require 
+    [clojure.java.jdbc :as jdbc]
+    [clojure.string :as string]
+    [clojure.pprint :refer [pprint]]
+    [clojure.java.shell :refer [sh]]
+    [tasks.view.report :as report]))
+(require '[tasks.view.report :as report] :reload)
+(out "status < 100")
+(require '[tasks.view.report :as report] :reload)
+(out "status < 100")
 (ns tasks.lib.gen-html
   (:require [clojure.string :as string]))
 (html-tag html)
@@ -34,104 +51,7 @@
 (html-tag footer)
 (html-tag details)
 (html-tag summary)
-(html-tag table)
-(html-tag thead)
-(html-tag tbody)
-(html-tag tr)
-(html-tag th)
-(html-tag td)
-(html-tag p)
-(html-tag time)
-(html-tag strong)
-(html-tag ul)
-(html-tag ol)
-(html-tag li)
-(html-tag em)
-(html-tag span)
-(html-tag a)
-(html-tag article)
-(html-tag-unpaired meta)
-(html-tag-unpaired br)
-(html-tag-unpaired img)
-(html-tag-unpaired input)
-(html-tag-unpaired hr)
-(ns tasks.view.report
-  (:require [tasks.lib.gen-html :refer :all]
-            [clojure.string :as string]))
-(defn tasks-report
-  ""
-  [coll]
-  (report "tasks" styles
-    (body
-      (header)
-      (main
-        (table
-          (thead
-            (tr
-              (th {:rowspan 4}
-                  "id")
-              (th {:rowspan 4}
-                  "master_task")
-              (th {:rowspan 4}
-                  "priority")
-              (th {:colspan 3}
-                  "status"))
-            (tr
-              (th "date_from")
-              (th "date_to")
-              (th "coplete_date"))
-            (tr
-              (th {:colspan 3}
-                  "description"))
-            (tr
-              (th {:colspan 3}
-                  "comment")))
-          (tbody
-            (string/join
-              "\n"
-              (map (fn [m]
-                       (string/join
-                        "\n"
-                        (list
-                          (tr
-                            (td {:rowspan 4}
-                                (:id m))
-                            (td {:rowspan 4}
-                                (:master_task m))
-                            (td {:rowspan 4}
-                                (:priority m))
-                            (td {:colspan 3}
-                                (progress
-                                  {:value (:status m)})))
-                          (tr
-                            (td (:date_from m))
-                            (td (:date_to m))
-                            (td (:complete_date m)))
-                          (tr 
-                            (td {:colspan 3}
-                                (:description m)))
-                          (tr
-                            (td {:colspan 3}
-                                (:comment m))))))
-                   coll))))))))
-(ns tasks.lib.gen-html
-  (:require [clojure.string :as string]))
-(html-tag html)
-(html-tag head)
-(html-tag title)
-(html-tag style)
-(html-tag script)
-(html-tag body)
-(html-tag h1)
-(html-tag h2)
-(html-tag h3)
-(html-tag section)
-(html-tag div)
-(html-tag header)
-(html-tag main)
-(html-tag footer)
-(html-tag details)
-(html-tag summary)
+(html-tag label)
 (html-tag progress)
 (html-tag table)
 (html-tag thead)
@@ -157,21 +77,21 @@
 (ns tasks.view.report
   (:require [tasks.lib.gen-html :refer :all]
             [clojure.string :as string]))
-(defn tasks-report
+#_(defn tasks-report
   ""
   [coll]
-  (report "tasks" styles
+  (report "tasks" styles scripts
     (body
       (header)
       (main
         (table
           (thead
             (tr
-              (th {:rowspan 4}
+              (th {:rowspan 5}
                   "id")
-              (th {:rowspan 4}
-                  "master_task")
-              (th {:rowspan 4}
+              (th {:rowspan 5}
+                  "m_id")
+              (th {:rowspan 5}
                   "priority")
               (th {:colspan 3}
                   "status"))
@@ -184,7 +104,10 @@
                   "description"))
             (tr
               (th {:colspan 3}
-                  "comment")))
+                  "comment"))
+            (tr
+              (th {:colspan 3}
+                  "tags")))
           (tbody
             (string/join
               "\n"
@@ -193,15 +116,20 @@
                         "\n"
                         (list
                           (tr
-                            (td {:rowspan 4}
+                            (td {:rowspan 5}
                                 (:id m))
-                            (td {:rowspan 4}
-                                (:master_task m))
-                            (td {:rowspan 4}
-                                (:priority m))
-                            (td {:colspan 3}
+                            (td {:rowspan 5}
+                                (p (:master_task m))
                                 (progress
-                                  {:value (:status m)})))
+                                  {:max 100
+                                   :value (- 100
+                                             (:priority m))}))
+                            (td {:rowspan 5}
+                                (:priority m))
+                            (td {:colspan 5}
+                                (progress
+                                  {:max 100
+                                   :value (:status m)})))
                           (tr
                             (td (:date_from m))
                             (td (:date_to m))
@@ -211,15 +139,17 @@
                                 (:description m)))
                           (tr
                             (td {:colspan 3}
-                                (:comment m))))))
+                                (if (nil? (:comment m))
+                                    "-"
+                                    (:comment m))))
+                          (tr
+                            (td {:colspan 3}
+                                (if (nil? (:tags m))
+                                    "-"
+                                    (:tags m)))))))
                    coll))))))))
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(require '[tasks.view.report :as report] :reload)
+(out "status < 100")
 (ns tasks.lib.tasks-db
   (:require 
     [clojure.java.jdbc :as jdbc]
@@ -227,274 +157,344 @@
     [clojure.pprint :refer [pprint]]
     [clojure.java.shell :refer [sh]]
     [tasks.view.report :as report]))
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
 (require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
 (require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-(nil? "")
-(nil? nil)
-(defn tasks-report
-  ""
-  [coll]
-  (report "tasks" styles
-    (body
-      (header)
-      (main
-        (table
-          (thead
-            (tr
-              (th {:rowspan 4}
-                  "id")
-              (th {:rowspan 4}
-                  "master_task")
-              (th {:rowspan 4}
-                  "priority")
-              (th {:colspan 3}
-                  "status"))
-            (tr
-              (th "date_from")
-              (th "date_to")
-              (th "coplete_date"))
-            (tr
-              (th {:colspan 3}
-                  "description"))
-            (tr
-              (th {:colspan 3}
-                  "comment")))
-          (tbody
-            (string/join
-              "\n"
-              (map (fn [m]
-                       (string/join
-                        "\n"
-                        (list
-                          (tr
-                            (td {:rowspan 4}
-                                (:id m))
-                            (td {:rowspan 4}
-                                (:master_task m))
-                            (td {:rowspan 4}
-                                (:priority m))
-                            (td {:colspan 3}
-                                (progress
-                                  {:value (:status m)})))
-                          (tr
-                            (td (:date_from m))
-                            (td (:date_to m))
-                            (td (:complete_date m)))
-                          (tr 
-                            (td {:colspan 3}
-                                (:description m)))
-                          (tr
-                            (td {:colspan 3}
-                                (if (nil? (:comment m))
-                                    ""
-                                    (:comment m)))))))
-                   coll))))))))
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
 (require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
 (require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-(defn tasks-report
-  ""
-  [coll]
-  (report "tasks" styles
-    (body
-      (header)
-      (main
-        (table
-          (thead
-            (tr
-              (th {:rowspan 4}
-                  "id")
-              (th {:rowspan 4}
-                  "master_task")
-              (th {:rowspan 4}
-                  "priority")
-              (th {:colspan 3}
-                  "status"))
-            (tr
-              (th "date_from")
-              (th "date_to")
-              (th "coplete_date"))
-            (tr
-              (th {:colspan 3}
-                  "description"))
-            (tr
-              (th {:colspan 3}
-                  "comment")))
-          (tbody
-            (string/join
-              "\n"
-              (map (fn [m]
-                       (string/join
-                        "\n"
-                        (list
-                          (tr
-                            (td {:rowspan 4}
-                                (:id m))
-                            (td {:rowspan 4}
-                                (:master_task m))
-                            (td {:rowspan 4}
-                                (:priority m))
-                            (td {:colspan 3}
-                                (progress
-                                  {:value (:status m)})))
-                          (tr
-                            (td (:date_from m))
-                            (td (:date_to m))
-                            (td (:complete_date m)))
-                          (tr 
-                            (td {:colspan 3}
-                                (:description m)))
-                          (tr
-                            (td {:colspan 3}
-                                (if (nil? (:comment m))
-                                    "null"
-                                    (:comment m)))))))
-                   coll))))))))
-(require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-(require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-(require '[tasks.view.report :as report] :reload)
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "id >= 50")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
-;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "status < 100")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
 ;; #update#task
 (jdbc/update!
   tsk
   :tasks
   {
-    :status 100
-    :complete_date "2023-06-21"
-    ;:priority 1
-    ;:date_to ""
-    ;:description
-    ;:comment
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    :date_to "2023-12-15"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
     ;:master_task nil
     ;:date_from ""
   }
-  ["id = ?" 17])
-;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "status < 100")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+  ["id = ?" 61])
+(out "status < 100")
 ;; #update#task
 (jdbc/update!
   tsk
   :tasks
   {
-    :status 100
-    ;:complete_date "2023-06-21"
-    ;:priority 1
-    ;:date_to ""
-    ;:description
-    ;:comment
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    :date_to "2023-12-13"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
     ;:master_task nil
     ;:date_from ""
   }
-  ["status < ?" 100])
-;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "status < 100")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+  ["id = ?" 61])
+(out "status < 100")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    :date_to "2023-12-18"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    ;:master_task nil
+    ;:date_from ""
+  }
+  ["id = ?" 56])
+(out "status < 100")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    :date_to "2023-12-11"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    ;:master_task nil
+    ;:date_from ""
+  }
+  ["id = ?" 62])
+(out "status < 100")
 ;; #add#task
 (jdbc/insert!
   tsk
   :tasks
   {
-    :master_task nil
-    :priority 1
-    :description "Выгрузить Уральская сталь 9/030006"
-    :date_to "2023-12-05"
+    :master_task 59
+    :priority 30
+    :description "Оцифровать константы ГОСТ Р 8.974-2019"
+    :date_to "2023-12-07"
     :comment nil
-    :date_from "2023-12-05"
-    :status 0
+    :date_from "2023-12-07"
+    :status 100
+    :complete_date "2023-12-07"
   })
+(out "status < 100")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task 59
+    :priority 30
+    :description "Код расчета коэффициентов перевода единиц концентрации"
+    :date_to "2023-12-29"
+    :comment nil
+    :date_from "2023-12-08"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(out "status < 100")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task 59
+    :priority 30
+    :description "SPA конвертер единиц концентрации."
+    :date_to "2023-12-29"
+    :comment nil
+    :date_from "2023-12-08"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 64
+    :tag "clojure"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 64
+    :tag "chemistry"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 65
+    :tag "chemistry"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 65
+    :tag "clojure"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 65
+    :tag "html"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 65
+    :tag "project"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 64
+    :tag "project"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 59
+    :tag "project"
+  })
+(out "status < 100")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    ;:master_task 59
+    :priority 1
+    :description "Подготовка к РОА"
+    :date_to "2023-12-18"
+    :comment nil
+    :date_from "2023-12-08"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(out "status < 100")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    ;:date_to "2023-12-11"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    :master_task 66
+    ;:date_from ""
+  }
+  ["id = ?" 56])
+(out "status < 100")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    ;:date_to "2023-12-11"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    :master_task 66
+    ;:date_from ""
+  }
+  ["id = ?" 61])
+(out "status < 100")
+;; #delete/task
+(jdbc/delete!
+  tsk
+  :tasks
+  ["id = ?" 56])
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 60
+    :tag "verification"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 66
+    :tag "audit"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 61
+    :tag "audit"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 1
+    :tag "verification"
+  })
+(out "status < 100")
 ;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "status < 100")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
+;; #tasks
+(out "status < 100")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task 66
+    :priority 1
+    :description "Вступительное слово"
+    :date_to "2023-12-18"
+    :comment nil
+    :date_from "2023-12-08"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(out "status < 100")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    ;:master_task 66
+    :priority 1
+    :description "Проверить выгрузку 9/029777 ОГЗ"
+    :date_to "2023-12-11"
+    :comment "Исправлены ошибочные данные о результатах поверки"
+    :date_from "2023-12-08"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 68
+    :tag "verification"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 68
+    :tag "check"
+  })
+(out "status < 100")
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 68
+    :tag "arshin"
+  })
+(out "status < 100")
+(require '[tasks.view.report :as report] :reload)
+(out "status < 100")

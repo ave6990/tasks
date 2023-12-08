@@ -32,10 +32,10 @@
            "select
               *,
               group_concat(tag, ' ') as tags
-            from tasks
+            from view_tasks
             left join
               tags
-              on tasks.id = tags.task_id"
+              on view_tasks.id = tags.task_id"
            (if-not-blank where)
            "group by id"
            (if-not-blank order-by)
@@ -45,57 +45,80 @@
   ([where]
     (get-data where "priority, coalesce(master_task, id)" "")))
 
+(defn out
+  [s]
+  (spit
+    "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+    (report/tasks-report
+      (get-data s)))
+  #_(sh
+    "vivaldi"
+    "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"))
+
 ;; #tasks
-(spit
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
-  (report/tasks-report
-    (get-data "status < 100")))
-(sh
-  "vivaldi"
-  "/media/sf_YandexDisk/Ermolaev/midb/tasks.html")
+(out "status < 100")
 
 ;; #add#task
 (jdbc/insert!
   tsk
   :tasks
   {
-    :master_task nil
+    ;:master_task 66
     :priority 1
-    :description "Выгрузить Уральская сталь 9/030006"
-    :date_to "2023-12-05"
-    :comment nil
-    :date_from "2023-12-05"
+    :description "Проверить выгрузку 9/029777 ОГЗ"
+    :date_to "2023-12-11"
+    :comment "Исправлены ошибочные данные о результатах поверки"
+    :date_from "2023-12-08"
     :status 0
+    ;:complete_date "2023-12-07"
   })
+(out "status < 100")
 
 ;; #update#task
 (jdbc/update!
   tsk
   :tasks
   {
-    :status 100
-    ;:complete_date "2023-06-21"
-    ;:priority 1
-    ;:date_to ""
-    ;:description
-    ;:comment
-    ;:master_task nil
+    ;:status 100
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    ;:date_to "2023-12-11"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    :master_task 66
     ;:date_from ""
   }
-  ["id = ?" 100])
+  ["id = ?" 61])
+(out "status < 100")
 
 ;; #delete/task
 (jdbc/delete!
   tsk
   :tasks
-  ["id = ?" 100])
+  ["id = ?" 56])
+(out "status < 100")
+
+;; #add#tags
+(jdbc/insert!
+  tsk
+  :tags
+  {
+    :task_id 68
+    :tag "arshin"
+  })
+(out "status < 100")
 
 (comment
 
 (require '[tasks.view.report :as report] :reload)
+(out "status < 100")
 
 (require '[clojure.repl :refer :all])
 
 (dir clojure.string)
+
+(* (- 2.13 (* 1.33 0.966)) 0.01 0.966)
+
+(- 2.13 (* 1.33 0.966))
 
 )

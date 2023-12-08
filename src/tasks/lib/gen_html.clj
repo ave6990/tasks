@@ -75,6 +75,7 @@
 (html-tag details)
 (html-tag summary)
 (html-tag summary)
+(html-tag label)
 (html-tag progress)
 (html-tag table)
 (html-tag thead)
