@@ -27,7 +27,7 @@
   ([where order-by limit]
     (jdbc/query
       tsk
-      (string/join " "
+      (string/join "\n"
         (list
            "select
               *,
@@ -45,6 +45,19 @@
   ([where]
     (get-data where "priority, coalesce(master_task, id)" "")))
 
+(defn complete
+  ""
+  ([id date s]
+   (jdbc/update!
+    tsk
+    :tasks
+    {:status 100
+     :complete_date date
+     :comment s}
+    ["id = ?" id]))
+  ([id date]
+   (complete id date nil)))
+
 (defn out
   [s]
   (spit
@@ -56,66 +69,72 @@
     "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"))
 
 ;; #tasks
-(out "status < 100")
+(out "status < 100 and status >= 0")
 
 ;; #add#task
 (jdbc/insert!
   tsk
   :tasks
   {
-    ;:master_task 66
-    :priority 1
-    :description "Проверить выгрузку 9/029777 ОГЗ"
-    :date_to "2023-12-11"
-    :comment "Исправлены ошибочные данные о результатах поверки"
-    :date_from "2023-12-08"
+    :master_task 66
+    :priority 5
+    :description "Подготовить баллоны"
+    :date_to "2023-12-15"
+    :comment nil
+    :date_from "2023-12-14"
     :status 0
     ;:complete_date "2023-12-07"
   })
-(out "status < 100")
+(out "status < 100 and status >= 0")
 
 ;; #update#task
 (jdbc/update!
   tsk
   :tasks
   {
-    ;:status 100
+    :status -10
     ;:complete_date "2023-12-07"
     ;:priority 20
     ;:date_to "2023-12-11"
     ;:description "9/030038 ОГЗ поверить"
     ;:comment "поверить с другим аккумулятором"
-    :master_task 66
+    ;:master_task 66
     ;:date_from ""
   }
-  ["id = ?" 61])
-(out "status < 100")
+  ["id = ?" 62])
+(out "status < 100 and status >= 0")
+
+;; #complete/task
+(complete 67 "2023-12-14")
+(out "status < 100 and status >= 0")
 
 ;; #delete/task
 (jdbc/delete!
   tsk
   :tasks
-  ["id = ?" 56])
-(out "status < 100")
+  ["id = ?" 69])
+(out "status < 100 and status >= 0")
 
 ;; #add#tags
 (jdbc/insert!
   tsk
   :tags
   {
-    :task_id 68
-    :tag "arshin"
+    :task_id 71
+    :tag "project"
   })
-(out "status < 100")
+(out "status < 100 and status >= 0")
 
 (comment
 
 (require '[tasks.view.report :as report] :reload)
-(out "status < 100")
+(out "status < 100
+      and status >= 0
+      --and tags like '%project%'")
 
 (require '[clojure.repl :refer :all])
 
-(dir clojure.string)
+(dir java.util)
 
 (* (- 2.13 (* 1.33 0.966)) 0.01 0.966)
 
