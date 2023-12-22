@@ -58,6 +58,16 @@
   ([id date]
    (complete id date nil)))
 
+(defn add-tags
+  [id tags]
+  (map (fn [s]
+           (jdbc/insert!
+             tsk
+             :tags
+             {:task_id id
+              :tag s}))
+       tags))
+
 (defn out
   [s]
   (spit
@@ -68,6 +78,14 @@
     "vivaldi"
     "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"))
 
+(defn last-id
+  []
+  (:id
+    (first
+      (jdbc/query
+        tsk
+        "select id from tasks order by id asc limit 1;"))))
+
 ;; #tasks
 (out "status < 100 and status >= 0")
 
@@ -76,15 +94,18 @@
   tsk
   :tasks
   {
-    :master_task 66
-    :priority 5
-    :description "Подготовить баллоны"
-    :date_to "2023-12-15"
+    :master_task nil
+    :priority 1
+    :description "Поверка 20.12.2023."
+    :date_to "2023-12-21"
     :comment nil
-    :date_from "2023-12-14"
+    :date_from "2023-12-20"
     :status 0
     ;:complete_date "2023-12-07"
   })
+(add-tags
+  (last-id) 
+  (list ))
 (out "status < 100 and status >= 0")
 
 ;; #update#task
@@ -105,7 +126,7 @@
 (out "status < 100 and status >= 0")
 
 ;; #complete/task
-(complete 67 "2023-12-14")
+(complete 75 "2023-12-21")
 (out "status < 100 and status >= 0")
 
 ;; #delete/task
@@ -113,16 +134,6 @@
   tsk
   :tasks
   ["id = ?" 69])
-(out "status < 100 and status >= 0")
-
-;; #add#tags
-(jdbc/insert!
-  tsk
-  :tags
-  {
-    :task_id 71
-    :tag "project"
-  })
 (out "status < 100 and status >= 0")
 
 (comment
