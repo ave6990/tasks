@@ -126,7 +126,7 @@
 (out "status < 100 and status >= 0")
 
 ;; #complete/task
-(complete 75 "2023-12-21")
+(complete 76 "2023-12-21")
 (out "status < 100 and status >= 0")
 
 ;; #delete/task
