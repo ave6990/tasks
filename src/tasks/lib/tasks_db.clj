@@ -84,7 +84,7 @@
     (first
       (jdbc/query
         tsk
-        "select id from tasks order by id asc limit 1;"))))
+        "select id from tasks order by id desc limit 1;"))))
 
 ;; #tasks
 (out "status < 100 and status >= 0")
@@ -96,16 +96,16 @@
   {
     :master_task nil
     :priority 1
-    :description "Поверка 20.12.2023."
-    :date_to "2023-12-21"
+    :description "Поверка 29.12.2023."
+    :date_to "2024-01-09"
     :comment nil
-    :date_from "2023-12-20"
+    :date_from "2023-12-29"
     :status 0
     ;:complete_date "2023-12-07"
   })
 (add-tags
   (last-id) 
-  (list ))
+  (list "verification"))
 (out "status < 100 and status >= 0")
 
 ;; #update#task
@@ -133,7 +133,7 @@
 (jdbc/delete!
   tsk
   :tasks
-  ["id = ?" 69])
+  ["id = ?" 77])
 (out "status < 100 and status >= 0")
 
 (comment
