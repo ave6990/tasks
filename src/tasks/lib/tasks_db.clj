@@ -96,16 +96,16 @@
   {
     :master_task nil
     :priority 1
-    :description "Поверка 29.12.2023."
-    :date_to "2024-01-09"
+    :description "Инструктаж ОГПЗ"
+    :date_to "2024-01-11"
     :comment nil
-    :date_from "2023-12-29"
+    :date_from "2024-01-10"
     :status 0
     ;:complete_date "2023-12-07"
   })
 (add-tags
   (last-id) 
-  (list "verification"))
+  (list "briefing" "ogpz"))
 (out "status < 100 and status >= 0")
 
 ;; #update#task
@@ -126,14 +126,20 @@
 (out "status < 100 and status >= 0")
 
 ;; #complete/task
-(complete 76 "2023-12-21")
+(complete 58 "2024-01-10")
 (out "status < 100 and status >= 0")
 
 ;; #delete/task
-(jdbc/delete!
-  tsk
-  :tasks
-  ["id = ?" 77])
+((fn [id]
+     (jdbc/delete!
+       tsk
+       :tasks
+       ["id = ?" id])
+     (jdbc/delete!
+       tsk
+       :tags
+       ["task_id = ?" id]))
+ 79)
 (out "status < 100 and status >= 0")
 
 (comment

@@ -1,223 +1,3 @@
-    :description "Clojure Serial port (clj-serial 2.0.5)"
-    :date_to "2023-02-01"
-    :comment "написать код для чтения/записи в COM-порт + протоколы"
-    :date_from "2023-12-11"
-    :status 0
-    ;:complete_date "2023-12-07"
-  })
-(out "status < 100")
-;; #add#tags
-(jdbc/insert!
-  tsk
-  :tags
-  {
-    :task_id 70
-    :tag "project"
-  })
-(out "status < 100")
-;; #add#tags
-(jdbc/insert!
-  tsk
-  :tags
-  {
-    :task_id 70
-    :tag "clojure"
-  })
-(out "status < 100")
-;; #add#tags
-(jdbc/insert!
-  tsk
-  :tags
-  {
-    :task_id 70
-    :tag "serial"
-  })
-(out "status < 100")
-;; #update#task
-(jdbc/update!
-  tsk
-  :tasks
-  {
-    :status -10
-    ;:complete_date "2023-12-07"
-    ;:priority 20
-    ;:date_to "2023-12-11"
-    ;:description "9/030038 ОГЗ поверить"
-    ;:comment "поверить с другим аккумулятором"
-    ;:master_task 66
-    ;:date_from ""
-  }
-  ["id = ?" 62])
-(out "status < 100")
-;; #tasks
-(out "status < 100 and status >= 0")
-;; #add#task
-(jdbc/insert!
-  tsk
-  :tasks
-  {
-    ;:master_task 66
-    :priority 90
-    :description "Поиск приказов Росстандарта"
-    :date_to "2023-02-01"
-    :comment "Страничка с фильтрами"
-    :date_from "2023-12-13"
-    :status 0
-    ;:complete_date "2023-12-07"
-  })
-(out "status < 100 and status >= 0")
-;; #add#tags
-(jdbc/insert!
-  tsk
-  :tags
-  {
-    :task_id 71
-    :tag "project"
-  })
-(out "status < 100 and status >= 0")
-;; #tasks
-(out "status < 100 and status >= 0
-      and tags like '%project%'")
-;; #tasks
-(out "status < 100 and status >= 0
-      and tags like '%project%'")
-;; #tasks
-(out "status < 100 and status >= 0
-      --and tags like '%project%'")
-;; #tasks
-(out "status < 100 and status >= 0")
-(defn get-data
-  ""
-  ([where order-by limit]
-    (jdbc/query
-      tsk
-      (string/join "\n"
-        (list
-           "select
-              *,
-              group_concat(tag, ' ') as tags
-            from view_tasks
-            left join
-              tags
-              on view_tasks.id = tags.task_id"
-           (if-not-blank where)
-           "group by id"
-           (if-not-blank order-by)
-           (if-not-blank limit)))))
-  ([where order-by]
-    (get-data where order-by ""))
-  ([where]
-    (get-data where "priority, coalesce(master_task, id)" "")))
-(require '[tasks.view.report :as report] :reload)
-(out "status < 100
-      and status >= 0")
-(require '[tasks.view.report :as report] :reload)
-(out "status < 100
-      --and status >= 0")
-(require '[tasks.view.report :as report] :reload)
-(out "status < 100
-      and status >= 0
-      and tags like '%project%'")
-(require '[tasks.view.report :as report] :reload)
-(out "status < 100
-      and status >= 0
-      --and tags like '%project%'")
-;; #add#task
-(jdbc/insert!
-  tsk
-  :tasks
-  {
-    :master_task 66
-    :priority 4
-    :description "Подготовить рабочее место"
-    :date_to "2023-12-15"
-    :comment nil
-    :date_from "2023-12-14"
-    :status 0
-    ;:complete_date "2023-12-07"
-  })
-(out "status < 100 and status >= 0")
-;; #add#task
-(jdbc/insert!
-  tsk
-  :tasks
-  {
-    :master_task 66
-    :priority 5
-    :description "Подготовить баллоны"
-    :date_to "2023-12-15"
-    :comment nil
-    :date_from "2023-12-14"
-    :status 0
-    ;:complete_date "2023-12-07"
-  })
-(out "status < 100 and status >= 0")
-;; #complete/task
-(complete 67 "2023-12-14")
-(out "status < 100 and status >= 0")
-exit
-;; #add#task
-(jdbc/insert!
-  tsk
-  :tasks
-  {
-    :master_task nil
-    :priority 80
-    :description "Скрипт копирования ГРСИ с ФИФ."
-    :date_to "2023-12-29"
-    :comment nil
-    :date_from "2023-12-20"
-    :status 0
-    ;:complete_date "2023-12-07"
-  })
-(out "status < 100 and status >= 0")
-(ns tasks.lib.tasks-db
-  (:require 
-    [clojure.java.jdbc :as jdbc]
-    [clojure.string :as string]
-    [clojure.pprint :refer [pprint]]
-    [clojure.java.shell :refer [sh]]
-    [tasks.view.report :as report]))
-(def tsk
-  {:classname "org.sqlite.jdbc"
-   :subprotocol "sqlite"
-   :subname "data/tasks.db"}) 
-(defmacro if-not-blank
-  [sym]
-  `(if (not (string/blank? ~sym))
-       (str ~(string/replace
-               sym
-               "-" 
-               " ")
-            " "
-            ~sym)
-       ""))
-(defn get-data
-  ""
-  ([where order-by limit]
-    (jdbc/query
-      tsk
-      (string/join "\n"
-        (list
-           "select
-              *,
-              group_concat(tag, ' ') as tags
-            from view_tasks
-            left join
-              tags
-              on view_tasks.id = tags.task_id"
-           (if-not-blank where)
-           "group by id"
-           (if-not-blank order-by)
-           (if-not-blank limit)))))
-  ([where order-by]
-    (get-data where order-by ""))
-  ([where]
-    (get-data where "priority, coalesce(master_task, id)" "")))
-(defn complete
-  ""
-  ([id date s]
-   (jdbc/update!
     tsk
     :tasks
     {:status 100
@@ -497,4 +277,224 @@ exit
 (add-tags
   (last-id) 
   (list "verification"))
+(out "status < 100 and status >= 0")
+exit
+(ns tasks.lib.tasks-db
+  (:require 
+    [clojure.java.jdbc :as jdbc]
+    [clojure.string :as string]
+    [clojure.pprint :refer [pprint]]
+    [clojure.java.shell :refer [sh]]
+    [tasks.view.report :as report]))
+(def tsk
+  {:classname "org.sqlite.jdbc"
+   :subprotocol "sqlite"
+   :subname "data/tasks.db"}) 
+(defmacro if-not-blank
+  [sym]
+  `(if (not (string/blank? ~sym))
+       (str ~(string/replace
+               sym
+               "-" 
+               " ")
+            " "
+            ~sym)
+       ""))
+(defn get-data
+  ""
+  ([where order-by limit]
+    (jdbc/query
+      tsk
+      (string/join "\n"
+        (list
+           "select
+              *,
+              group_concat(tag, ' ') as tags
+            from view_tasks
+            left join
+              tags
+              on view_tasks.id = tags.task_id"
+           (if-not-blank where)
+           "group by id"
+           (if-not-blank order-by)
+           (if-not-blank limit)))))
+  ([where order-by]
+    (get-data where order-by ""))
+  ([where]
+    (get-data where "priority, coalesce(master_task, id)" "")))
+(defn complete
+  ""
+  ([id date s]
+   (jdbc/update!
+    tsk
+    :tasks
+    {:status 100
+     :complete_date date
+     :comment s}
+    ["id = ?" id]))
+  ([id date]
+   (complete id date nil)))
+(defn add-tags
+  [id tags]
+  (map (fn [s]
+           (jdbc/insert!
+             tsk
+             :tags
+             {:task_id id
+              :tag s}))
+       tags))
+(defn out
+  [s]
+  (spit
+    "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"
+    (report/tasks-report
+      (get-data s)))
+  #_(sh
+    "vivaldi"
+    "/media/sf_YandexDisk/Ermolaev/midb/tasks.html"))
+(defn last-id
+  []
+  (:id
+    (first
+      (jdbc/query
+        tsk
+        "select id from tasks order by id desc limit 1;"))))
+;; #tasks
+(out "status < 100 and status >= 0")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 1
+    :description "Поверка 29.12.2023."
+    :date_to "2024-01-09"
+    :comment nil
+    :date_from "2023-12-29"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(add-tags
+  (last-id) 
+  (list "verification"))
+(out "status < 100 and status >= 0")
+;; #update#task
+(jdbc/update!
+  tsk
+  :tasks
+  {
+    :status -10
+    ;:complete_date "2023-12-07"
+    ;:priority 20
+    ;:date_to "2023-12-11"
+    ;:description "9/030038 ОГЗ поверить"
+    ;:comment "поверить с другим аккумулятором"
+    ;:master_task 66
+    ;:date_from ""
+  }
+  ["id = ?" 62])
+(out "status < 100 and status >= 0")
+;; #complete/task
+(complete 76 "2023-12-21")
+(out "status < 100 and status >= 0")
+;; #delete/task
+(jdbc/delete!
+  tsk
+  :tasks
+  ["id = ?" 77])
+(out "status < 100 and status >= 0")
+(comment
+(require '[tasks.view.report :as report] :reload)
+(out "status < 100
+      and status >= 0
+      --and tags like '%project%'")
+(require '[clojure.repl :refer :all])
+(dir java.util)
+(* (- 2.13 (* 1.33 0.966)) 0.01 0.966)
+(- 2.13 (* 1.33 0.966))
+)
+;; #delete/task
+(jdbc/delete!
+  tsk
+  :tasks
+  ["id = ?" 79])
+(out "status < 100 and status >= 0")
+;; #complete/task
+(complete 78 "2024-01-10")
+(out "status < 100 and status >= 0")
+;; #complete/task
+(complete 58 "2024-01-10")
+(out "status < 100 and status >= 0")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 10
+    :description "ВТР, редукторы добавить в 1С"
+    :date_to "2024-01-12"
+    :comment nil
+    :date_from "2024-01-10"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(add-tags
+  (last-id) 
+  (list "1c" "metrolog" "equipment"))
+(out "status < 100 and status >= 0")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 11
+    :description "АТ-20 аттестация"
+    :date_to "2024-01-12"
+    :comment nil
+    :date_from "2024-01-10"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(add-tags
+  (last-id) 
+  (list "equipment"))
+(out "status < 100 and status >= 0")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 15
+    :description "Тех. обслуживание эталонов?"
+    :date_to "2024-01-12"
+    :comment nil
+    :date_from "2024-01-10"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(add-tags
+  (last-id) 
+  (list "equipment" "service"))
+(out "status < 100 and status >= 0")
+;; #add#task
+(jdbc/insert!
+  tsk
+  :tasks
+  {
+    :master_task nil
+    :priority 1
+    :description "Инструктаж ОГПЗ"
+    :date_to "2024-01-11"
+    :comment nil
+    :date_from "2024-01-10"
+    :status 0
+    ;:complete_date "2023-12-07"
+  })
+(add-tags
+  (last-id) 
+  (list "briefing" "ogpz"))
 (out "status < 100 and status >= 0")
